@@ -1,6 +1,6 @@
 {
-  "name": "vite-plugin-iconfont",
-  "version": "1.0.7",
+  "name": "@imal1/vite-plugin-iconfont",
+  "version": "1.0.0",
   "description": "This plugin is for auto download iconfont symbol js file",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eliduty/vite-plugin-iconfont.git"
+    "url": "git+https://github.com/imal1/vite-plugin-iconfont.git"
   },
   "files": [
     "dist"
@@ -31,9 +31,9 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/eliduty/vite-plugin-iconfont/issues"
+    "url": "https://github.com/imal1/vite-plugin-iconfont/issues"
   },
-  "homepage": "https://github.com/eliduty/vite-plugin-iconfont#readme",
+  "homepage": "https://github.com/imal1/vite-plugin-iconfont#readme",
   "devDependencies": {
     "@types/node": "^18.11.18",
     "release-it": "^15.6.0",
