@@ -81,7 +81,7 @@ export default (options: Options[]): Plugin => {
         if (!o.inject) {
           generateFile(join(process.cwd(), o.distUrl as string), URL_CONTENT);
         } else {
-          if (IS_DEV) {
+          if (!IS_DEV) {
             const { outDir, assetsDir } = config.build;
             url = join(config.base, assetsDir, o.distUrl || "")
               .split("\\")
