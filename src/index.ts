@@ -54,7 +54,7 @@ export default (options: Options[]): Plugin => {
     },
     async transformIndexHtml() {
       const injectArr: IndexHtmlTransformResult = [];
-      const IS_SERVE = config.command === "serve";
+      const IS_DEV = config.mode === "development";
       for (let i = 0; i < opt.length; i++) {
         const o = opt[i];
         let url = o.url;
@@ -81,11 +81,12 @@ export default (options: Options[]): Plugin => {
         if (!o.inject) {
           generateFile(join(process.cwd(), o.distUrl as string), URL_CONTENT);
         } else {
-          if (IS_SERVE) {
-            url = join(config.publicDir, o.distUrl || "")
+          if (IS_DEV) {
+            const { outDir, assetsDir } = config.build;
+            url = join(config.base, assetsDir, o.distUrl || "")
               .split("\\")
               .join("/");
-            generateFile(`${url}`, URL_CONTENT);
+            generateFile(`${outDir}/${url}`, URL_CONTENT);
           }
           injectArr.push({
             tag: "script",
