@@ -25,19 +25,19 @@ interface Options {
   iconJson?: boolean | string;
 }
 
-export default (options: Options): Plugin => {
-  const opt: Options = Object.assign(
+export default (options: Options[]): Plugin => {
+  const opt: Options[] = options.map((o, i) => Object.assign(
     {
       url: "",
-      distUrl: "iconfont.js",
+      distUrl: `iconfont-${i}.js`,
       inject: true,
       dts: false,
       iconJson: false,
     },
-    options
-  );
+    o
+  ));
 
-  if (!opt.url) {
+  if (opt.some(o => !o.url)) {
     throw new Error(
       `【vite-plugin-iconfont】 options url parameter is required`
     );
@@ -52,42 +52,45 @@ export default (options: Options): Plugin => {
     async transformIndexHtml() {
       const injectArr: IndexHtmlTransformResult = [];
       const IS_DEV = config.mode === "development";
-      let url = opt.url;
+      for (let i = 0; i < options.length; i++) {
+        const o = options[i];
+        let url = o.url;
 
-      const URL_CONTENT = await getURLContent(url);
-      const iconList = URL_CONTENT.match(/(?<=id=").+?(?=")/g) || [];
+        const URL_CONTENT = await getURLContent(url);
+        const iconList = URL_CONTENT.match(/(?<=id=").+?(?=")/g) || [];
 
-      // 生成下载图标配置
-      if (opt.iconJson) {
-        const JSON_CONTENT = await getURLContent(url.replace(".js", ".json"));
-        const iconJsonPath =
-          opt.iconJson !== true ? opt.iconJson : "iconfont.json";
-        generateFile(iconJsonPath, JSON_CONTENT);
-      }
-
-      // 生成ts类型声明文件
-      if (opt.dts) {
-        const dtsPath = options.dts !== true ? options.dts : "iconfont.d.ts";
-        const iconDts = `declare type Iconfont = "${iconList.join('"|"')}"`;
-        generateFile(dtsPath as string, iconDts);
-      }
-
-      // 自动下载iconfont symbol js
-      if (!opt.inject) {
-        generateFile(join(process.cwd(), opt.distUrl as string), URL_CONTENT);
-      } else {
-        if (!IS_DEV) {
-          const { outDir, assetsDir } = config.build;
-          url = join(config.base, assetsDir, opt.distUrl || "")
-            .split("\\")
-            .join("/");
-          generateFile(`${outDir}/${url}`, URL_CONTENT);
+        // 生成下载图标配置
+        if (o.iconJson) {
+          const JSON_CONTENT = await getURLContent(url.replace(".js", ".json"));
+          const iconJsonPath =
+            o.iconJson !== true ? o.iconJson : "iconfont.json";
+          generateFile(iconJsonPath, JSON_CONTENT);
         }
-        injectArr.push({
-          tag: "script",
-          injectTo: "head",
-          attrs: { src: url },
-        });
+
+        // 生成ts类型声明文件
+        if (o.dts) {
+          const dtsPath = options[i].dts !== true ? options[i].dts : "iconfont.d.ts";
+          const iconDts = `declare type Iconfont = "${iconList.join('"|"')}"`;
+          generateFile(dtsPath as string, iconDts);
+        }
+
+        // 自动下载iconfont symbol js
+        if (!o.inject) {
+          generateFile(join(process.cwd(), o.distUrl as string), URL_CONTENT);
+        } else {
+          if (!IS_DEV) {
+            const { outDir, assetsDir } = config.build;
+            url = join(config.base, assetsDir, o.distUrl || "")
+              .split("\\")
+              .join("/");
+            generateFile(`${outDir}/${url}`, URL_CONTENT);
+          }
+          injectArr.push({
+            tag: "script",
+            injectTo: "head",
+            attrs: { src: url },
+          });
+        }
       }
       return injectArr;
     },
