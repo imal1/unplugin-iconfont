@@ -26,22 +26,25 @@ interface Options {
 }
 
 export default (options: Options[]): Plugin => {
-  const opt: Options[] = options.map((o, i) => Object.assign(
-    {
-      url: "",
-      distUrl: `iconfont-${i}.js`,
-      inject: true,
-      dts: false,
-      iconJson: false,
-    },
-    o
-  ));
-
-  if (opt.some(o => !o.url)) {
+  if (options.some(o => !o.url)) {
     throw new Error(
       `【vite-plugin-iconfont】 options url parameter is required`
     );
   }
+
+  const opt: Options[] = options.map((o, i) => {
+    const urlArr = o.url.split(/[\/]/g);
+    return Object.assign(
+      {
+        url: "",
+        distUrl: urlArr[urlArr.length - 1],
+        inject: true,
+        dts: false,
+        iconJson: false,
+      },
+      o
+    )
+  });
 
   let config;
   return {
@@ -51,9 +54,9 @@ export default (options: Options[]): Plugin => {
     },
     async transformIndexHtml() {
       const injectArr: IndexHtmlTransformResult = [];
-      const IS_DEV = config.mode === "development";
-      for (let i = 0; i < options.length; i++) {
-        const o = options[i];
+      const IS_SERVE = config.command === "serve";
+      for (let i = 0; i < opt.length; i++) {
+        const o = opt[i];
         let url = o.url;
 
         const URL_CONTENT = await getURLContent(url);
@@ -78,12 +81,11 @@ export default (options: Options[]): Plugin => {
         if (!o.inject) {
           generateFile(join(process.cwd(), o.distUrl as string), URL_CONTENT);
         } else {
-          if (!IS_DEV) {
-            const { outDir, assetsDir } = config.build;
-            url = join(config.base, assetsDir, o.distUrl || "")
+          if (IS_SERVE) {
+            url = join(config.publicDir, o.distUrl || "")
               .split("\\")
               .join("/");
-            generateFile(`${outDir}/${url}`, URL_CONTENT);
+            generateFile(`${url}`, URL_CONTENT);
           }
           injectArr.push({
             tag: "script",
