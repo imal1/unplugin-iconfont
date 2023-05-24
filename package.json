@@ -1,6 +1,7 @@
 {
   "name": "@imal1/vite-plugin-iconfont",
   "version": "1.0.0",
+  "private": true,
   "description": "This plugin is for auto download iconfont symbol js file",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
