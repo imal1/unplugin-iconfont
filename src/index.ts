@@ -46,6 +46,7 @@ export default (options: Options[]): Plugin => {
         inject: true,
         dts: false,
         iconJson: false,
+        prefix: "",
       },
       o
     )
