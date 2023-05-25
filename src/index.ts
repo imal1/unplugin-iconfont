@@ -23,6 +23,11 @@ interface Options {
    * 自动生成iconfont图标集合
    */
   iconJson?: boolean | string;
+  /**
+   * 是否添加prefix前缀
+   * @example prefix: 'icon-' 生成的symbol id为 icon-xxx
+   */
+  prefix?: string;
 }
 
 export default (options: Options[]): Plugin => {
@@ -59,7 +64,10 @@ export default (options: Options[]): Plugin => {
         const o = opt[i];
         let url = o.url;
 
-        const URL_CONTENT = await getURLContent(url);
+        let URL_CONTENT = await getURLContent(url);
+        if (o.prefix) {
+          URL_CONTENT = URL_CONTENT.replace(/\<symbol id\=\"/g, `<symbol id="${o.prefix}`)
+        }
         const iconList = URL_CONTENT.match(/(?<=id=").+?(?=")/g) || [];
 
         // 生成下载图标配置

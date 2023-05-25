@@ -73,6 +73,14 @@ iconfont symbol js是否自动注入到`index.html`文件。
 - **Default :** `false`
 - **Required :**`false`
 
+### prefix
+
+生成的iconfont symbol js的前缀。
+
+- **Type :** `string`
+- **Default :** ''
+- **Required :**`false`
+
 >注意：要获得eslint的支持请在eslint配置文件中增加如下配置：
 
 ```js
