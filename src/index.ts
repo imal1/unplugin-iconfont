@@ -8,9 +8,13 @@ interface Options {
    */
   url: string;
   /**
-   * 保存自动下载iconfont symbol js的路径
+   * 保存自动下载iconfont symbol js的public下的路径，默认为iconfonts
    */
-  distUrl?: string;
+  filePath?: string;
+  /**
+   * 自动下载iconfont symbol js的文件名称，默认为url最后一个/后的名称
+   */
+  fileName?: string;
   /**
    * iconfont symbol js是否自动注入到index.html
    */
@@ -42,7 +46,8 @@ export default (options: Options[]): Plugin => {
     return Object.assign(
       {
         url: "",
-        distUrl: urlArr[urlArr.length - 1],
+        fileName: urlArr[urlArr.length - 1],
+        filePath: 'iconfonts',
         inject: true,
         dts: false,
         iconJson: false,
@@ -60,7 +65,6 @@ export default (options: Options[]): Plugin => {
     },
     async transformIndexHtml() {
       const injectArr: IndexHtmlTransformResult = [];
-      const IS_DEV = config.mode === "development";
       for (let i = 0; i < opt.length; i++) {
         const o = opt[i];
         let url = o.url;
@@ -87,16 +91,12 @@ export default (options: Options[]): Plugin => {
         }
 
         // 自动下载iconfont symbol js
-        if (!o.inject) {
-          generateFile(join(process.cwd(), o.distUrl as string), URL_CONTENT);
-        } else {
-          if (!IS_DEV) {
-            const { outDir, assetsDir } = config.build;
-            url = join(config.base, assetsDir, o.distUrl || "")
-              .split("\\")
-              .join("/");
-            generateFile(`${outDir}/${url}`, URL_CONTENT);
-          }
+        const { publicDir } = config;
+        generateFile(join(publicDir, o.filePath as string, o.fileName as string).split("\\").join("/"), URL_CONTENT);
+        if (o.inject) {
+          url = join(config.base, o.filePath as string, o.fileName || "")
+            .split("\\")
+            .join("/");
           injectArr.push({
             tag: "script",
             injectTo: "head",
