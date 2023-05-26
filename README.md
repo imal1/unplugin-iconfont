@@ -12,11 +12,11 @@
 ## 安装
 
 ```shell
-npm install -D vite-plugin-iconfont
+npm install -D @imal1/vite-plugin-iconfont
 // 或
-yarn add -D vite-plugin-iconfont
+yarn add -D @imal1/vite-plugin-iconfont
 // 或
-pnpm install -D vite-plugin-iconfont
+pnpm install -D @imal1/vite-plugin-iconfont
 ```
 
 ## 使用方法
@@ -109,13 +109,16 @@ export default () => {
   return defineConfig({
     plugins: [
       vue(),
-      Iconfont({
-        url: '//at.alicdn.com/t/c/font_3303_220hwi541tl8.js',
-        distUrl: './public/assets/fonts/iconfont.js',
-        iconJson: './public/iconfont.json',
-        dts: './types/iconfont.d.ts',
-        inject:false
-      }),
+      Iconfont([
+        {
+          url: '//at.alicdn.com/t/c/font_3303_220hwi541tl8.js',
+          filePath: 'assets/fonts',
+          fileName: 'iconfont.js',
+          iconJson: './public/iconfont.json',
+          dts: './types/iconfont.d.ts',
+          inject:false
+        }
+      ]),
     ]
   });
 };
