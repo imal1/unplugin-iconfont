@@ -27,7 +27,7 @@ pnpm install -D @imal1/vite-plugin-iconfont
 import { defineConfig } from 'vite';
 import Iconfont from 'vite-plugin-iconfont';
 export default defineConfig({
-  plugins: [Iconfont({ url: '//at.alicdn.com/t/c/font_3303_220hwi541tl8.js'})]
+  plugins: [Iconfont([{ url: '//at.alicdn.com/t/c/font_3303_220hwi541tl8.js'}])]
 });
 ```
 
