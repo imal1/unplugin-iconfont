@@ -32,6 +32,11 @@ interface Options {
    * @example prefix: 'icon-' 生成的symbol id为 icon-xxx
    */
   prefix?: string;
+  /**
+   * 对iconfont symbol进行trim start
+   * @example trimStart: 'icon-' 'icon-xxx' 生成的symbol id为 xxx
+   */
+  trimStart?: string;
 }
 
 export default (options: Options[]): Plugin => {
@@ -52,6 +57,7 @@ export default (options: Options[]): Plugin => {
         dts: false,
         iconJson: false,
         prefix: "",
+        trimStart: "",
       },
       o
     )
@@ -70,6 +76,9 @@ export default (options: Options[]): Plugin => {
         let url = o.url;
 
         let URL_CONTENT = await getURLContent(url);
+        if (o.trimStart) {
+          URL_CONTENT = URL_CONTENT.replace(new RegExp(`id="${o.trimStart}`, "g"), 'id="');
+        }
         if (o.prefix) {
           URL_CONTENT = URL_CONTENT.replace(/\<symbol id\=\"/g, `<symbol id="${o.prefix}`)
         }
