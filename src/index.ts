@@ -1,8 +1,7 @@
 import { dirname, join } from "node:path";
 import { existsSync, promises as fs } from "node:fs";
-import { IndexHtmlTransformResult, type Plugin } from "vite";
 
-interface Options {
+export interface Options {
   /**
    * iconfont symbol js url
    */
@@ -39,83 +38,61 @@ interface Options {
   trimStart?: string;
 }
 
-export default (options: Options[]): Plugin => {
-  if (options.some(o => !o.url)) {
-    throw new Error(
-      `【vite-plugin-iconfont】 options url parameter is required`
-    );
+export const generateJson = async (o: Options) => {
+  // 生成下载图标配置
+  if (o.iconJson) {
+    const JSON_CONTENT = await getURLContent(o.url.replace(".js", ".json"));
+    const iconJsonPath = o.iconJson !== true ? o.iconJson : "iconfont.json";
+    generateFile(iconJsonPath, JSON_CONTENT);
+  }
+};
+
+export const generateDts = (
+  o: Options,
+  i: number,
+  opts: Options[],
+  iconList: string[]
+) => {
+  // 生成ts类型声明文件
+  if (o.dts) {
+    const dtsPath = opts[i].dts !== true ? opts[i].dts : "iconfont.d.ts";
+    const iconDts = `declare type Iconfont = "${iconList.join('"|"')}"`;
+    generateFile(dtsPath as string, iconDts);
+  }
+};
+
+export const downloadSymbol = (
+  config: any,
+  o: Options,
+  URL_CONTENT: string
+) => {
+  const { publicDir } = config;
+  generateFile(
+    join(publicDir, o.filePath as string, o.fileName as string)
+      .split("\\")
+      .join("/"),
+    URL_CONTENT
+  );
+};
+
+export const injectHtml = (
+  url: string,
+  config: any,
+  o: Options,
+  injectArr: any[]
+) => {
+  if (o.inject) {
+    url = join(config.base, o.filePath as string, o.fileName || "")
+      .split("\\")
+      .join("/");
+    injectArr.push({
+      tag: "script",
+      injectTo: "head",
+      attrs: { src: url },
+    });
   }
 
-  const opt: Options[] = options.map((o, i) => {
-    const urlArr = o.url.split(/[\/]/g);
-    return Object.assign(
-      {
-        url: "",
-        fileName: urlArr[urlArr.length - 1],
-        filePath: 'iconfonts',
-        inject: true,
-        dts: false,
-        iconJson: false,
-        prefix: "",
-        trimStart: "",
-      },
-      o
-    )
-  });
-
-  let config;
-  return {
-    name: "vite-plugin-iconfont",
-    configResolved(resolvedConfig) {
-      config = resolvedConfig;
-    },
-    async transformIndexHtml() {
-      const injectArr: IndexHtmlTransformResult = [];
-      for (let i = 0; i < opt.length; i++) {
-        const o = opt[i];
-        let url = o.url;
-
-        let URL_CONTENT = await getURLContent(url);
-        if (o.trimStart) {
-          URL_CONTENT = URL_CONTENT.replace(new RegExp(`id="${o.trimStart}`, "g"), 'id="');
-        }
-        if (o.prefix) {
-          URL_CONTENT = URL_CONTENT.replace(/\<symbol id\=\"/g, `<symbol id="${o.prefix}`)
-        }
-        const iconList = URL_CONTENT.match(/(?<=id=").+?(?=")/g) || [];
-
-        // 生成下载图标配置
-        if (o.iconJson) {
-          const JSON_CONTENT = await getURLContent(url.replace(".js", ".json"));
-          const iconJsonPath =
-            o.iconJson !== true ? o.iconJson : "iconfont.json";
-          generateFile(iconJsonPath, JSON_CONTENT);
-        }
-
-        // 生成ts类型声明文件
-        if (o.dts) {
-          const dtsPath = options[i].dts !== true ? options[i].dts : "iconfont.d.ts";
-          const iconDts = `declare type Iconfont = "${iconList.join('"|"')}"`;
-          generateFile(dtsPath as string, iconDts);
-        }
-
-        // 自动下载iconfont symbol js
-        const { publicDir } = config;
-        generateFile(join(publicDir, o.filePath as string, o.fileName as string).split("\\").join("/"), URL_CONTENT);
-        if (o.inject) {
-          url = join(config.base, o.filePath as string, o.fileName || "")
-            .split("\\")
-            .join("/");
-          injectArr.push({
-            tag: "script",
-            injectTo: "head",
-            attrs: { src: url },
-          });
-        }
-      }
-      return injectArr;
-    },
-  };
+  return injectArr;
 };
 
 /**
@@ -123,7 +100,7 @@ export default (options: Options[]): Plugin => {
  * @param url
  * @returns
  */
-function getURL(url) {
+export function getURL(url) {
   return /http/.test(url) ? url : `https:${url}`;
 }
 
@@ -132,7 +109,7 @@ function getURL(url) {
  * @param url
  * @returns
  */
-function isHttpsURL(url) {
+export function isHttpsURL(url) {
   return /https/.test(url);
 }
 
@@ -141,7 +118,7 @@ function isHttpsURL(url) {
  * @param path
  * @param content
  */
-async function generateFile(filepath, content) {
+export async function generateFile(filepath, content) {
   const originalContent = existsSync(filepath)
     ? await fs.readFile(filepath, "utf-8")
     : "";
@@ -164,7 +141,7 @@ async function writeFile(filePath: string, content = "") {
  * @param url
  * @returns
  */
-async function getURLContent(url): Promise<string> {
+export async function getURLContent(url): Promise<string> {
   const targetURL = getURL(url);
   let http;
   try {
