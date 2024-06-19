@@ -26,10 +26,11 @@ export default defineNuxtModule({
             url: "",
             fileName: urlArr[urlArr.length - 1],
             filePath: "iconfonts",
-            inject: true,
+            inject: false,
             dts: false,
-            iconJson: false,
+            iconJson: true,
             prefix: "",
+            separator: "-",
             trimStart: "",
           },
           o
@@ -50,7 +51,7 @@ export default defineNuxtModule({
         if (o.prefix) {
           URL_CONTENT = URL_CONTENT.replace(
             /\<symbol id\=\"/g,
-            `<symbol id="${o.prefix}`
+            `<symbol id="${o.prefix}${o.separator}`
           );
         }
         const iconList = URL_CONTENT.match(/(?<=id=").+?(?=")/g) || [];

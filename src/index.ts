@@ -1,5 +1,8 @@
 import { dirname, join } from "node:path";
 import { existsSync, promises as fs } from "node:fs";
+import { Script } from "node:vm";
+import { IconSet } from "@iconify/tools";
+import { parse } from "svg-parser";
 
 export interface Options {
   /**
@@ -32,18 +35,86 @@ export interface Options {
    */
   prefix?: string;
   /**
+   * 前缀分隔符
+   * @default -
+   */
+  separator?: string;
+  /**
    * 对iconfont symbol进行trim start
    * @example trimStart: 'icon-' 'icon-xxx' 生成的symbol id为 xxx
    */
   trimStart?: string;
+  /**
+   * 是否输出 iconify 格式的 json，iconJson 为 false 时无效
+   */
+  iconifyJson?: boolean;
 }
+
+export const transIconifyJson = (
+  o: Options,
+  jsonStr: string,
+  jsStr: string
+) => {
+  if (o.iconifyJson) {
+    const iconset = new IconSet({ prefix: o.prefix });
+    const json = JSON.parse(jsonStr);
+
+    // console.log(jsStr, parseSVGContent(jsStr))
+    // console.log(jsStr.split(/<svg(S*?)[^>]*>/))
+    const jsonIdName = `_iconfont_svg_string_${json.id}`;
+    const ctx = {
+      window: {
+        [jsonIdName]: "",
+      },
+    };
+    try {
+      const script = new Script(jsStr);
+      script.runInNewContext(ctx);
+    } catch (error) {
+      () => {};
+    }
+    const svgStr = ctx.window[jsonIdName];
+    const parsed = parse(svgStr);
+    const symbols = parsed.children[0].children;
+
+    // 遍历提取的每个图标并放入单独的SVG标签中
+    const svgArr = symbols.map((symbol) => {
+      let svgContent = '<path d="';
+
+      symbol.children
+        .filter((child) => child.tagName === "path")
+        .forEach((c, i) => {
+          if (i !== 0) svgContent += " ";
+          svgContent += `${c.properties.d}`;
+        });
+
+      svgContent += '" fill="currentColor" />';
+
+      return { id: symbol.properties.id, body: svgContent };
+    });
+
+    return JSON.stringify({
+      prefix: o.prefix,
+      icons: Object.fromEntries(
+        json.glyphs.map((g) => {
+          const { body } =
+            svgArr.find(
+              (s) => s.id === `${json.css_prefix_text}${g.font_class}`
+            ) || {};
+          return [g.name, { body, width: 1024, height: 1024 }];
+        })
+      ),
+    });
+  } else return jsonStr;
+};
 
 export const generateJson = async (o: Options) => {
   // 生成下载图标配置
   if (o.iconJson) {
+    const JS_CONTENT = await getURLContent(o.url);
     const JSON_CONTENT = await getURLContent(o.url.replace(".js", ".json"));
     const iconJsonPath = o.iconJson !== true ? o.iconJson : "iconfont.json";
-    generateFile(iconJsonPath, JSON_CONTENT);
+    generateFile(iconJsonPath, transIconifyJson(o, JSON_CONTENT, JS_CONTENT));
   }
 };
 
