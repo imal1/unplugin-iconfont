@@ -1,7 +1,6 @@
 import { dirname, join } from "node:path";
 import { existsSync, promises as fs } from "node:fs";
 import { Script } from "node:vm";
-import { IconSet } from "@iconify/tools";
 import { parse } from "svg-parser";
 
 export interface Options {
@@ -56,11 +55,7 @@ export const transIconifyJson = (
   jsStr: string
 ) => {
   if (o.iconifyJson) {
-    const iconset = new IconSet({ prefix: o.prefix });
     const json = JSON.parse(jsonStr);
-
-    // console.log(jsStr, parseSVGContent(jsStr))
-    // console.log(jsStr.split(/<svg(S*?)[^>]*>/))
     const jsonIdName = `_iconfont_svg_string_${json.id}`;
     const ctx = {
       window: {
