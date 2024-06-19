@@ -2,7 +2,8 @@
   "name": "unplugin-iconfont",
   "version": "1.1.2",
   "description": "This plugin is for auto download iconfont symbol js file",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "module": "dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
   "exports": {
@@ -10,11 +11,19 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./nuxt": {
+      "import": "./dist/nuxt.js",
+      "require": "./dist/nuxt.cjs"
+    },
+    "./vite": {
+      "import": "./dist/vite.js",
+      "require": "./dist/vite.cjs"
+    },
     "./*": "./*"
   },
   "scripts": {
     "prebuild": "rimraf dist/*",
-    "build": "tsup src/index.ts --dts --format cjs,esm",
+    "build": "tsup",
     "release": "pnpm build && release-it"
   },
   "repository": {
@@ -37,6 +46,7 @@
   "devDependencies": {
     "@iconify/tools": "^4.0.4",
     "@nuxt/kit": "^3.12.1",
+    "@nuxt/schema": "^3.12.2",
     "@types/node": "^18.11.18",
     "release-it": "^15.6.0",
     "rimraf": "^4.1.2",

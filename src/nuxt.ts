@@ -1,4 +1,5 @@
 import { defineNuxtModule } from "@nuxt/kit";
+import type {} from "@nuxt/schema";
 import {
   type Options,
   getURLContent,
