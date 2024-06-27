@@ -1,7 +1,7 @@
 # ⚡unplugin-iconfont
 [![npm](https://img.shields.io/npm/v/vite-plugin-iconfont)](https://www.npmjs.com/package/vite-plugin-iconfont) [![npm](https://img.shields.io/npm/dt/vite-plugin-iconfont)](https://www.npmjs.com/package/vite-plugin-iconfont)
 
-这是一个自动下载iconfont symbol js到项目的vite 插件，旨在解决单个项目多个iconfont库的问题（目前仅支持阿里icofont），支持以下特性：
+这是一个自动下载iconfont symbol js到项目的vite 插件，旨在解决单个项目多个iconfont库的问题（目前仅支持阿里iconfont），支持以下特性：
 
 - 自动下载iconfont symbol js 到本地。
 - 自动生成iconfont json配置（iconify格式）。
@@ -93,6 +93,7 @@ export default defineNuxtConfig({
 },
 ```
 
+可用unocss引入
 uno.config.ts
 
 ```ts
