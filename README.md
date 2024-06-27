@@ -81,7 +81,7 @@ export default defineNuxtConfig({
 
 插件配置项
 
-```json
+```js
 // options
 {
   url: '//at.alicdn.com/t/c/font_*********.js',
