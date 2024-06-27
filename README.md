@@ -7,6 +7,7 @@
 - 自动生成iconfont json配置（iconify格式）。
 - 自动生成iconfont TypeScript类型声明文件。
 - 支持构建时自动注入index.html。
+- 🚧 webpack支持维护中...
 
 ## 安装
 
