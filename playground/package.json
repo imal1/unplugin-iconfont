@@ -1,9 +1,12 @@
 {
   "private": true,
   "scripts": {
-    "dev": "nodemon -w '../src/**/*.ts' -e .ts -x vite"
+    "dev": "nodemon -w '../src/**/*.ts' -e .ts -x rspack"
   },
   "devDependencies": {
+    "@rspack/cli": "^0.7.5",
+    "@rspack/core": "^0.7.5",
+    "ts-node": "^10.9.2",
     "vite": "^5.0.4",
     "vite-plugin-inspect": "^0.8.1"
   }
