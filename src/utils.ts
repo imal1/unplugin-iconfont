@@ -125,7 +125,9 @@ export async function generateFile(filepath: PathLike & string, content: string 
   const originalContent = existsSync(filepath)
     ? await fs.readFile(filepath, 'utf-8')
     : ''
-  originalContent !== content && writeFile(filepath, content)
+  if (originalContent !== content) {
+    await writeFile(filepath, content)
+  }
 }
 
 /**

@@ -34,7 +34,7 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = options => 
       this.error(`Options url parameter is required`)
 
     config = config.map((c) => {
-      const urlArr = c.url.split(/[\/]/g)
+      const urlArr = c.url.split(/\//g)
       return Object.assign(
         {
           url: '',
@@ -65,7 +65,7 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = options => 
 
       if (c.prefix) {
         URL_CONTENT = URL_CONTENT.replace(
-          /\<symbol id\=\"/g,
+          /<symbol id="/g,
           `<symbol id="${c.prefix}`,
         )
       }

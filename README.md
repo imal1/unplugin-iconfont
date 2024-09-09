@@ -16,8 +16,8 @@ And do a global replacement of `unplugin-starter` with your plugin name.
 
 Then you can start developing your unplugin 🔥
 
-To test your plugin, run: `pnpm run dev`
-To release a new version, run: `pnpm run release`
+To test your plugin, run: `bun run dev`
+To release a new version, run: `bun run release`
 
 ## Install
 
