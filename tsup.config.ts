@@ -9,5 +9,5 @@ export default <Options>{
   dts: true,
   cjsInterop: true,
   splitting: true,
-  onSuccess: 'bun run build:fix',
+  onSuccess: 'pnpm run build:fix',
 }

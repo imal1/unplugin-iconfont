@@ -1,16 +1,20 @@
 import type { UnpluginFactory } from 'unplugin'
 import { createUnplugin } from 'unplugin'
 import { loadConfig } from 'unconfig'
+import type { IndexHtmlTransformResult } from 'vite'
 import type { Options } from './types'
-import { downloadSymbol, generateDts, generateJson, getURLContent } from './utils'
+import { downloadSymbol, generateDts, generateJson, getURLContent, injectHtml } from './utils'
 
 export const defineConfig = (configs: Options) => configs
 
 let frameConfig: any
 
-export const unpluginFactory: UnpluginFactory<Options | undefined> = options => ({
+export const unpluginFactory: UnpluginFactory<Options | undefined> = (options, meta) => ({
   name: 'unplugin-iconfont',
   async transform() {
+    const isVite = meta.framework === 'vite'
+    const isRspack = meta.framework === 'rspack'
+
     let config = Array.isArray(options) ? options : options ? [options] : [] as any[]
     config = (await loadConfig({
       sources: [
@@ -72,7 +76,27 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = options => 
       if (c.dts)
         generateDts(c, i, config, iconList)
 
-      downloadSymbol(frameConfig.publicDir, c, URL_CONTENT)
+      if (c.inject) {
+        if (isVite) {
+          const injectArr: IndexHtmlTransformResult = []
+
+          injectHtml(c.url, frameConfig, c, injectArr)
+        }
+      }
+
+      if (c.fileName) {
+        let publicDir: string = ''
+
+        if (isVite)
+          publicDir = frameConfig.publicDir
+
+        if (isRspack) {
+          publicDir = frameConfig.output.publicPath === 'auto' ? frameConfig.output.path : frameConfig.output.publicPath
+        }
+
+        if (publicDir)
+          downloadSymbol(publicDir, c, URL_CONTENT)
+      }
     }
 
     return null
@@ -82,8 +106,17 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = options => 
       frameConfig = config
     },
   },
+  rollup: {
+    // Rollup plugin
+  },
+  rolldown: {
+    // Rolldown plugin
+  },
   webpack(compiler) {
-    console.log(compiler)
+    // Configure webpack compiler
+  },
+  rspack(compiler) {
+    frameConfig = compiler.options
   },
 })
 

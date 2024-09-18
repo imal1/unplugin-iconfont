@@ -83,8 +83,8 @@
     "build:fix": "esno scripts/postbuild.ts",
     "lint": "eslint .",
     "play": "npm -C playground run dev",
-    "prepublishOnly": "bun run build",
-    "release": "bumpp && bun publish",
+    "prepublishOnly": "pnpm run build",
+    "release": "bumpp && pnpm publish",
     "start": "esno src/index.ts",
     "test": "vitest"
   },
