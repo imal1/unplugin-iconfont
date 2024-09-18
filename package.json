@@ -1,17 +1,17 @@
 {
-  "name": "unplugin-starter",
+  "name": "unplugin-iconfont",
   "type": "module",
-  "version": "0.1.0",
+  "version": "1.2.0",
   "packageManager": "pnpm@9.9.0",
   "description": "",
   "license": "MIT",
-  "homepage": "https://github.com/antfu/unplugin-starter#readme",
+  "homepage": "https://github.com/imal1/unplugin-iconfont#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antfu/unplugin-starter.git"
+    "url": "git+https://github.com/imal1/unplugin-iconfont.git"
   },
   "bugs": {
-    "url": "https://github.com/antfu/unplugin-starter/issues"
+    "url": "https://github.com/imal1/unplugin-iconfont/issues"
   },
   "keywords": [
     "unplugin",
