@@ -10,12 +10,6 @@ let frameConfig: any
 
 export const unpluginFactory: UnpluginFactory<Options | undefined> = options => ({
   name: 'unplugin-iconfont',
-  transformInclude(id) {
-    return (
-      id.endsWith('iconfont.config.', id.length - 2)
-      || id.endsWith('iconfont.config.', id.length - 3)
-    )
-  },
   async transform() {
     let config = Array.isArray(options) ? options : options ? [options] : [] as any[]
     config = (await loadConfig({
@@ -30,10 +24,10 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = options => 
       ],
       defaults: config,
     })).config
-    if (!config.length || !config.every(c => c.url))
+    if (!config.length || !config.every(c => c.url || c.configFile))
       this.error(`Options url parameter is required`)
 
-    config = config.map((c) => {
+    config = config.filter(c => c.url).map((c) => {
       const urlArr = c.url.split(/\//g)
       return Object.assign(
         {
@@ -66,7 +60,7 @@ export const unpluginFactory: UnpluginFactory<Options | undefined> = options => 
       if (c.prefix) {
         URL_CONTENT = URL_CONTENT.replace(
           /<symbol id="/g,
-          `<symbol id="${c.prefix}`,
+          `<symbol id="${c.prefix}${c.separator}`,
         )
       }
 
