@@ -114,13 +114,13 @@ export default createUnplugin<Options | undefined>((options, meta) => {
       },
     },
     webpack(compiler) {
-      compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
-        frameConfig = compilation.options
+      compiler.hooks.watchRun.tap(PLUGIN_NAME, (watching) => {
+        frameConfig = watching.options
       })
     },
     rspack(compiler) {
-      compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
-        frameConfig = compilation.options
+      compiler.hooks.watchRun.tap(PLUGIN_NAME, (watching) => {
+        frameConfig = watching.options
       })
     },
   }
