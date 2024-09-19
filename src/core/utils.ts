@@ -1,4 +1,4 @@
-import type { IconfontConfig } from './types'
+import type { IconfontConfig } from '../types'
 import { existsSync, promises as fs, type PathLike } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { Script } from 'node:vm'

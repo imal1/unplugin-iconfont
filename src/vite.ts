@@ -1,3 +1,3 @@
-import unplugin from '.'
+import unplugin, { type Options } from '.'
 
-export default unplugin.vite
+export default unplugin.vite as (options?: Options) => any

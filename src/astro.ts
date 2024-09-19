@@ -1,6 +1,4 @@
-import type { Options } from './types'
-
-import unplugin from '.'
+import unplugin, { type Options } from '.'
 
 export default (options: Options): any => ({
   name: 'unplugin-starter',

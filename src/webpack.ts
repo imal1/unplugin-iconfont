@@ -1,3 +1,3 @@
-import unplugin from '.'
+import unplugin, { type Options } from '.'
 
-export default unplugin.webpack
+export default unplugin.webpack as (options?: Options) => any
