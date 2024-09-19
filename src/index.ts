@@ -1,124 +1,131 @@
 import type { UnpluginFactory } from 'unplugin'
-import { createUnplugin } from 'unplugin'
-import { loadConfig } from 'unconfig'
 import type { IndexHtmlTransformResult } from 'vite'
 import type { Options } from './types'
+import { loadConfig } from 'unconfig'
+import { createUnplugin } from 'unplugin'
 import { downloadSymbol, generateDts, generateJson, getURLContent, injectHtml } from './utils'
 
 export const defineConfig = (configs: Options): Options => configs
 
 let frameConfig: any
 
-export const unpluginFactory: UnpluginFactory<Options | undefined> = (options, meta) => ({
-  name: 'unplugin-iconfont',
-  async transform() {
-    const isVite = meta.framework === 'vite'
-    const isRspack = meta.framework === 'rspack'
+const PLUGIN_NAME = 'unplugin-iconfont'
 
-    let config = Array.isArray(options) ? options : options ? [options] : [] as any[]
-    config = (await loadConfig({
-      sources: [
-        {
-          files: 'iconfont.config',
-          extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
-          rewrite(config) {
-            return (config as any).default
+export const unpluginFactory: UnpluginFactory<Options | undefined> = (options, meta) => {
+  // const filter = createFilter(
+  //   options?.configFile || [/iconfont\.config\.(c|m)?js|ts$/],
+  // )
+
+  return {
+    name: PLUGIN_NAME,
+    enforce: 'post',
+    async transform() {
+      const isVite = meta.framework === 'vite'
+      const isRspack = meta.framework === 'rspack'
+
+      let config = Array.isArray(options) ? options : options ? [options] : [] as any[]
+      config = (await loadConfig({
+        sources: [
+          {
+            files: 'iconfont.config',
+            extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
+            rewrite(config) {
+              return (config as any).default
+            },
           },
-        },
-      ],
-      defaults: config,
-    })).config
-    if (!config.length || !config.every(c => c.url || c.configFile))
-      this.error(`Options url parameter is required`)
+        ],
+        defaults: config,
+      })).config
+      if (!config.length || !config.every(c => c.url || c.configFile))
+        this.error(`Options url parameter is required`)
 
-    config = config.filter(c => c.url).map((c) => {
-      const urlArr = c.url.split(/\//g)
-      return Object.assign(
-        {
-          url: '',
-          fileName: urlArr[urlArr.length - 1],
-          filePath: 'iconfonts',
-          inject: true,
-          dts: false,
-          iconJson: false,
-          prefix: '',
-          separator: '-',
-          trimStart: '',
-          iconifyJson: false,
-        },
-        c,
-      )
-    })
-
-    for (const [i, c] of config.entries()) {
-      const url = c.url
-      let URL_CONTENT = await getURLContent(url)
-
-      if (c.trimStart) {
-        URL_CONTENT = URL_CONTENT.replace(
-          new RegExp(`id="${c.trimStart}`, 'g'),
-          'id="',
+      config = config.filter(c => c.url).map((c) => {
+        const urlArr = c.url.split(/\//g)
+        return Object.assign(
+          {
+            url: '',
+            fileName: urlArr[urlArr.length - 1],
+            filePath: 'iconfonts',
+            inject: true,
+            dts: false,
+            iconJson: false,
+            prefix: '',
+            separator: '-',
+            trimStart: '',
+            iconifyJson: false,
+          },
+          c,
         )
-      }
+      })
 
-      if (c.prefix) {
-        URL_CONTENT = URL_CONTENT.replace(
-          /<symbol id="/g,
-          `<symbol id="${c.prefix}${c.separator}`,
-        )
-      }
+      for (const [i, c] of config.entries()) {
+        const url = c.url
+        let URL_CONTENT = await getURLContent(url)
 
-      const iconList = URL_CONTENT.match(/(?<=id=").+?(?=")/g) || []
+        if (c.trimStart) {
+          URL_CONTENT = URL_CONTENT.replace(
+            new RegExp(`id="${c.trimStart}`, 'g'),
+            'id="',
+          )
+        }
 
-      if (c.iconJson)
-        await generateJson(c)
+        if (c.prefix) {
+          URL_CONTENT = URL_CONTENT.replace(
+            /<symbol id="/g,
+            `<symbol id="${c.prefix}${c.separator}`,
+          )
+        }
 
-      if (c.dts)
-        generateDts(c, i, config, iconList)
+        const iconList = URL_CONTENT.match(/(?<=id=").+?(?=")/g) || []
 
-      if (c.inject) {
-        if (isVite) {
-          const injectArr: IndexHtmlTransformResult = []
+        if (c.iconJson)
+          await generateJson(c)
 
-          injectHtml(c.url, frameConfig, c, injectArr)
+        if (c.dts)
+          generateDts(c, i, config, iconList)
+
+        if (c.inject) {
+          if (isVite) {
+            const injectArr: IndexHtmlTransformResult = []
+
+            injectHtml(c.url, frameConfig, c, injectArr)
+          }
+        }
+
+        if (c.fileName) {
+          let publicDir: string = ''
+
+          if (isVite)
+            publicDir = frameConfig.publicDir
+
+          if (isRspack) {
+            publicDir = frameConfig.output.publicPath === 'auto' ? frameConfig.output.path : frameConfig.output.publicPath
+          }
+
+          if (publicDir)
+            downloadSymbol(publicDir, c, URL_CONTENT)
         }
       }
 
-      if (c.fileName) {
-        let publicDir: string = ''
-
-        if (isVite)
-          publicDir = frameConfig.publicDir
-
-        if (isRspack) {
-          publicDir = frameConfig.output.publicPath === 'auto' ? frameConfig.output.path : frameConfig.output.publicPath
-        }
-
-        if (publicDir)
-          downloadSymbol(publicDir, c, URL_CONTENT)
-      }
-    }
-
-    return null
-  },
-  vite: {
-    configResolved(config) {
-      frameConfig = config
+      return null
     },
-  },
-  rollup: {
-    // Rollup plugin
-  },
-  rolldown: {
-    // Rolldown plugin
-  },
-  webpack(compiler) {
-    // Configure webpack compiler
-  },
-  rspack(compiler) {
-    frameConfig = compiler.options
-  },
-})
+    vite: {
+      configResolved(config) {
+        frameConfig = config
+      },
+    },
+    webpack(compiler) {
+      compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+        frameConfig = compilation.options
+      })
+    },
+    rspack(compiler) {
+      compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+        frameConfig = compilation.options
+      })
+    },
+  }
+}
 
 export const unplugin = /* #__PURE__ */ createUnplugin(unpluginFactory)
 

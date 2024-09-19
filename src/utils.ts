@@ -1,8 +1,8 @@
+import type { IconfontConfig } from './types'
+import { existsSync, promises as fs, type PathLike } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { type PathLike, existsSync, promises as fs } from 'node:fs'
 import { Script } from 'node:vm'
 import { parse } from 'svg-parser'
-import type { IconfontConfig } from './types'
 
 export function transIconifyJson(o: IconfontConfig, jsonStr: string, jsStr: string): string {
   if (o.iconifyJson) {
@@ -15,11 +15,9 @@ export function transIconifyJson(o: IconfontConfig, jsonStr: string, jsStr: stri
     }
     try {
       const script = new Script(jsStr)
-      script.runInNewContext(ctx)
+      script.runInNewContext(ctx, { displayErrors: false })
     }
-    catch (error) {
-      console.error('running script error:', error)
-    }
+    catch {}
     const svgStr = ctx.window[jsonIdName]
     const parsed: any = parse(svgStr)
     const symbols = parsed.children[0].children

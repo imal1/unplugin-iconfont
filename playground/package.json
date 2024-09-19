@@ -2,7 +2,7 @@
   "name": "playground",
   "private": true,
   "scripts": {
-    "dev": "nodemon -w '../src/**/*.ts' -e .ts -x rspack"
+    "dev": "nodemon -w '../src/**/*.ts' -e .ts -x rspack serve"
   },
   "devDependencies": {
     "@rspack/cli": "^1.0.5",
