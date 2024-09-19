@@ -47,3 +47,5 @@ export interface IconfontConfig {
 export type IconFontOptions = Partial<IconfontConfig> & IconfontConfig[]
 
 export type Options = Partial<IconFontOptions> & { configFile?: string }
+
+export const defineConfig = (configs: Options): Options => configs

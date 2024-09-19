@@ -4,8 +4,6 @@ import { loadConfig } from 'unconfig'
 import { createUnplugin } from 'unplugin'
 import { downloadSymbol, generateDts, generateJson, getURLContent, injectHtml } from './utils'
 
-export const defineConfig = (configs: Options): Options => configs
-
 let frameConfig: any
 
 const PLUGIN_NAME = 'unplugin-iconfont'

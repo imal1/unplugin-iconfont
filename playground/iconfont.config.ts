@@ -1,4 +1,4 @@
-import { defineConfig } from '../src/core/unplugin'
+import { defineConfig } from '../src'
 
 export default defineConfig([
   {
