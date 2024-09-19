@@ -1,5 +1,6 @@
 import { defineConfig } from '@rsbuild/core'
-import Unplugin from '../src/rspack'
+// eslint-disable-next-line antfu/no-import-dist
+import Unplugin from '../dist/rspack'
 
 export default defineConfig({
   html: {

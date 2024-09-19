@@ -132,12 +132,22 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch src",
+    "build:fix": "esno scripts/postbuild.ts",
     "lint": "eslint .",
     "play": "npm -C playground run dev",
     "prepublishOnly": "pnpm run build",
     "release": "bumpp && pnpm publish",
     "start": "esno src/index.ts",
     "test": "vitest"
+  },
+  "peerDependencies": {
+    "@farmfe/core": ">=1",
+    "@nuxt/kit": "^3",
+    "@nuxt/schema": "^3",
+    "esbuild": "*",
+    "rollup": "^3",
+    "vite": ">=3",
+    "webpack": "^4 || ^5"
   },
   "peerDependenciesMeta": {
     "@farmfe/core": {
