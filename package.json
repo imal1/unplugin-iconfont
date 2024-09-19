@@ -126,27 +126,18 @@
     }
   },
   "files": [
+    "*.d.ts",
     "dist"
   ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch src",
-    "build:fix": "esno scripts/postbuild.ts",
     "lint": "eslint .",
     "play": "npm -C playground run dev",
     "prepublishOnly": "pnpm run build",
     "release": "bumpp && pnpm publish",
     "start": "esno src/index.ts",
     "test": "vitest"
-  },
-  "peerDependencies": {
-    "@farmfe/core": ">=1",
-    "@nuxt/kit": "^3",
-    "@nuxt/schema": "^3",
-    "esbuild": "*",
-    "rollup": "^3",
-    "vite": ">=3",
-    "webpack": "^4 || ^5"
   },
   "peerDependenciesMeta": {
     "@farmfe/core": {
@@ -176,6 +167,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.6.2",
+    "@antfu/utils": "^0.7.10",
     "@nuxt/kit": "^3.13.2",
     "@nuxt/schema": "^3.13.2",
     "@types/node": "^22.5.5",
@@ -185,6 +177,7 @@
     "eslint": "^9.10.0",
     "esno": "^4.7.0",
     "fast-glob": "^3.3.2",
+    "local-pkg": "^0.5.0",
     "nodemon": "^3.1.5",
     "rimraf": "^6.0.1",
     "rollup": "^4.22.0",
@@ -192,6 +185,7 @@
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",
     "unconfig": "^0.5.5",
+    "unimport": "^3.12.0",
     "vite": "^5.4.6",
     "vitest": "^2.1.1",
     "webpack": "^5.94.0"

@@ -2,9 +2,10 @@
   "name": "playground",
   "private": true,
   "scripts": {
-    "dev": "nodemon -w '../src/**/*.ts' -e .ts -x rspack serve"
+    "dev": "nodemon -w '../src/**/*.ts' -e .ts -x rsbuild dev"
   },
   "devDependencies": {
+    "@rsbuild/core": "^1.0.4",
     "@rspack/cli": "^1.0.5",
     "@rspack/core": "^1.0.5",
     "vite": "^5.4.2",

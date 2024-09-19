@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2018",
     "jsx": "preserve",
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,

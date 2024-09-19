@@ -36,6 +36,8 @@ export default createUnplugin<Options | undefined>((options, meta) => {
       if (!config.length || !config.every(c => c.url || c.configFile))
         this.error(`Options url parameter is required`)
 
+      const originConfig = config
+
       config = config.filter(c => c.url).map((c) => {
         const urlArr = c.url.split(/\//g)
         return Object.assign(
@@ -89,7 +91,7 @@ export default createUnplugin<Options | undefined>((options, meta) => {
           }
         }
 
-        if (c.fileName) {
+        if (originConfig[i].fileName) {
           let publicDir: string = ''
 
           if (isVite)
