@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "lib": ["dom", "esnext"],
+    "target": "es2018",
+    "jsx": "preserve",
+    "lib": ["esnext"],
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,
-    "esModuleInterop": true
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
   },
   "exclude": ["dist", "eslint.config.js"]
 }
