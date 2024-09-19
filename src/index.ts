@@ -5,7 +5,7 @@ import type { IndexHtmlTransformResult } from 'vite'
 import type { Options } from './types'
 import { downloadSymbol, generateDts, generateJson, getURLContent, injectHtml } from './utils'
 
-export const defineConfig = (configs: Options) => configs
+export const defineConfig = (configs: Options): Options => configs
 
 let frameConfig: any
 

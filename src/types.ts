@@ -44,4 +44,4 @@ export interface IconfontConfig {
   iconifyJson?: boolean
 }
 
-export type Options = Partial<IconfontConfig> & IconfontConfig[]
+export type Options = Partial<IconfontConfig> & IconfontConfig[] | { configFile: string }
