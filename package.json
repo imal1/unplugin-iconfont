@@ -1,7 +1,7 @@
 {
   "name": "unplugin-iconfont",
   "type": "module",
-  "version": "1.2.1-beta.7",
+  "version": "1.2.1-beta.8",
   "packageManager": "pnpm@9.9.0",
   "description": "",
   "license": "MIT",
