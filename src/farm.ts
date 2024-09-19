@@ -1,4 +1,3 @@
-import { createFarmPlugin } from 'unplugin'
-import { unpluginFactory } from '.'
+import unplugin from '.'
 
-export default createFarmPlugin(unpluginFactory)
+export default unplugin.farm

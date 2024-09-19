@@ -1,4 +1,3 @@
-import { createRollupPlugin } from 'unplugin'
-import { unpluginFactory } from '.'
+import unplugin from '.'
 
-export default createRollupPlugin(unpluginFactory)
+export default unplugin.rollup

@@ -4,7 +4,7 @@ import { Script } from 'node:vm'
 import { parse } from 'svg-parser'
 import type { IconfontConfig } from './types'
 
-export function transIconifyJson(o: IconfontConfig, jsonStr: string, jsStr: string) {
+export function transIconifyJson(o: IconfontConfig, jsonStr: string, jsStr: string): string {
   if (o.iconifyJson) {
     const json = JSON.parse(jsonStr)
     const jsonIdName = `_iconfont_svg_string_${json.id}`
@@ -17,7 +17,9 @@ export function transIconifyJson(o: IconfontConfig, jsonStr: string, jsStr: stri
       const script = new Script(jsStr)
       script.runInNewContext(ctx)
     }
-    catch (error) {}
+    catch (error) {
+      console.error('running script error:', error)
+    }
     const svgStr = ctx.window[jsonIdName]
     const parsed: any = parse(svgStr)
     const symbols = parsed.children[0].children
@@ -55,7 +57,7 @@ export function transIconifyJson(o: IconfontConfig, jsonStr: string, jsStr: stri
   else { return jsonStr }
 }
 
-export async function generateJson(o: IconfontConfig) {
+export async function generateJson(o: IconfontConfig): Promise<void> {
   // 生成下载图标配置
   if (o.iconJson) {
     const JS_CONTENT = await getURLContent(o.url)
@@ -65,7 +67,7 @@ export async function generateJson(o: IconfontConfig) {
   }
 }
 
-export function generateDts(o: IconfontConfig, i: number, opts: IconfontConfig[], iconList: string[]) {
+export function generateDts(o: IconfontConfig, i: number, opts: IconfontConfig[], iconList: string[]): void {
   // 生成ts类型声明文件
   if (o.dts) {
     const dtsPath = opts[i].dts !== true ? opts[i].dts : 'iconfont.d.ts'
@@ -74,7 +76,7 @@ export function generateDts(o: IconfontConfig, i: number, opts: IconfontConfig[]
   }
 }
 
-export function downloadSymbol(publicPath: string, o: IconfontConfig, URL_CONTENT: string) {
+export function downloadSymbol(publicPath: string, o: IconfontConfig, URL_CONTENT: string): void {
   generateFile(
     join(publicPath, o.filePath as string, o.fileName as string)
       .split('\\')
@@ -83,7 +85,7 @@ export function downloadSymbol(publicPath: string, o: IconfontConfig, URL_CONTEN
   )
 }
 
-export function injectHtml(url: string, config: any, o: IconfontConfig, injectArr: any[]) {
+export function injectHtml(url: string, config: any, o: IconfontConfig, injectArr: any[]): any[] {
   if (o.inject) {
     url = join(config.base, o.filePath as string, o.fileName || '')
       .split('\\')
@@ -101,27 +103,28 @@ export function injectHtml(url: string, config: any, o: IconfontConfig, injectAr
 /**
  * 获取地址，如果是相对协议地址自动添加https
  * @param url
- * @returns
+ * @returns {string} 返回处理后的URL
  */
-export function getURL(url: string) {
+export function getURL(url: string): string {
   return /http/.test(url) ? url : `https:${url}`
 }
 
 /**
  * 判断是否是https地址
  * @param url
- * @returns
+ * @returns {boolean} 返回是否为HTTPS URL
  */
-export function isHttpsURL(url: string) {
-  return /https/.test(url)
+export function isHttpsURL(url: string): boolean {
+  return /^https:\/\//.test(url)
 }
 
 /**
  * 生成文件
  * @param path
  * @param content
+ * @returns {Promise<void>}
  */
-export async function generateFile(filepath: PathLike & string, content: string | undefined) {
+export async function generateFile(filepath: PathLike & string, content: string | undefined): Promise<void> {
   const originalContent = existsSync(filepath)
     ? await fs.readFile(filepath, 'utf-8')
     : ''
@@ -134,11 +137,11 @@ export async function generateFile(filepath: PathLike & string, content: string 
  * 写文件
  * @param filePath
  * @param content
- * @returns
+ * @returns {Promise<void>} 返回一个Promise，表示文件写入操作的完成
  */
-async function writeFile(filePath: string, content = '') {
+async function writeFile(filePath: string, content = ''): Promise<void> {
   await fs.mkdir(dirname(filePath), { recursive: true })
-  return await fs.writeFile(filePath, content, 'utf-8')
+  await fs.writeFile(filePath, content, 'utf-8')
 }
 
 /**
@@ -152,10 +155,15 @@ export async function getURLContent(url: string): Promise<string> {
   try {
     http = isHttpsURL(targetURL) ? await import('node:https') : await import('node:http')
   }
-  catch (err) {
+  catch {
     console.error('https support is disabled!')
+    throw new Error('https support is disabled!')
   }
   return new Promise((resolve, reject) => {
+    if (!http) {
+      reject(new Error('cannot load http/https module'))
+      return
+    }
     http
       .get(targetURL, (res: any) => {
         let data = ''
