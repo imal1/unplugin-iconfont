@@ -12,10 +12,8 @@ export default defineConfig({
     },
   },
   tools: {
-    rspack: {
-      plugins: [
-        Unplugin({ configFile: './iconfont.config.ts' }),
-      ],
+    rspack: (config, { appendPlugins }) => {
+      appendPlugins(Unplugin({ configFile: './iconfont.config.ts' }))
     },
   },
 })

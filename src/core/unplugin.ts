@@ -1,7 +1,7 @@
 import type { IndexHtmlTransformResult } from 'vite'
-import type { Options } from '../types'
 import { loadConfig } from 'unconfig'
 import { createUnplugin } from 'unplugin'
+import type { Options } from '../types'
 import { downloadSymbol, generateDts, generateJson, getURLContent, injectHtml } from './utils'
 
 let frameConfig: any
